@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #pragma comment( lib, "kernel32.lib" )
 #pragma comment( lib, "advapi32.lib" )
 #pragma comment( lib, "shell32.lib" )
@@ -22,7 +24,7 @@ HANDLE			hServerStopEvent = NULL;
 VOID ServiceStart( DWORD dwArgc, LPTSTR *lpszArgv );
 VOID ServiceStop();
 BOOL ReportStatusToSCMgr( DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint );
-void AddToMessageLog( LPTSTR lpszMsg );
+void AddToMessageLog( LPCTSTR lpszMsg );
 VOID WINAPI service_ctrl( DWORD dwCtrlCode );
 VOID WINAPI service_main( DWORD dwArgc, LPTSTR *lpszArgv );
 VOID CmdInstallService();
@@ -34,8 +36,6 @@ LPTSTR GetLastErrorText( LPTSTR lpszBuf, DWORD dwSize );
 VOID ServiceStart( DWORD dwArgc, LPTSTR *lpszArgv )
 {
 	HANDLE	hEvents[2] = {NULL, NULL};
-	DWORD	cbRead;
-	DWORD	dwWait;
 
 	if( !ReportStatusToSCMgr( SERVICE_START_PENDING, NO_ERROR, 3000 ) )
 	{
@@ -99,11 +99,12 @@ VOID ServiceStop()
 }
 
 
-void _CRTAPI1 main( int argc, char **argv )
+int main( int argc, char **argv )
 {
+	TCHAR szName[] = TEXT(SZSERVICENAME);
 	SERVICE_TABLE_ENTRY dispatchTable[] =
 	{
-		{ TEXT( SZSERVICENAME ), ( LPSERVICE_MAIN_FUNCTION )service_main },
+		{ szName, service_main },
 		{ NULL, NULL }
 	};
 
@@ -126,7 +127,8 @@ void _CRTAPI1 main( int argc, char **argv )
 		{
 			goto dispatch;
 		}
-		exit( 0 );
+
+		return 0;
 	}
 
 dispatch:
@@ -141,6 +143,8 @@ dispatch:
 	{
 		AddToMessageLog( TEXT( "StartServiceCtrlDispatcher failed." ) );
 	}
+
+	return 0;
 }
 
 void WINAPI service_main( DWORD dwArgc, LPTSTR *lpszArgv )
@@ -230,11 +234,11 @@ BOOL ReportStatusToSCMgr( DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwW
 }
 
 
-VOID AddToMessageLog( LPTSTR lpszMsg )
+VOID AddToMessageLog( LPCTSTR lpszMsg )
 {
 	TCHAR   szMsg[256];
 	HANDLE  hEventSource;
-	LPTSTR  lpszStrings[2];
+	LPCTSTR lpszStrings[2];
 
 
 	if( !bDebug )
