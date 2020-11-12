@@ -73,8 +73,9 @@ VOID ServiceStart(DWORD dwArgc, LPTSTR *lpszArgv)
 		goto cleanup;
 	}
 
-	while(1)
+	while(ssStatus.dwCurrentState == SERVICE_RUNNING)
 	{
+		Sleep(1000);//service loop code here
 	}
 
 cleanup:
@@ -88,6 +89,7 @@ cleanup:
 	{
 		CloseHandle(hEvents[1]);
 	}
+	exit(0);
 }
 
 VOID ServiceStop()
