@@ -72,12 +72,13 @@ VOID ServiceStart(DWORD dwArgc, LPTSTR *lpszArgv)
 	{
 		goto cleanup;
 	}
+
 	while(ssStatus.dwCurrentState == SERVICE_RUNNING)
 	{
 	    Sleep(1000);
 	}
 
-    cleanup:
+cleanup:
 
 	if(hServerStopEvent)
 	{
@@ -87,8 +88,8 @@ VOID ServiceStart(DWORD dwArgc, LPTSTR *lpszArgv)
 	{
 		CloseHandle(hEvents[1]);
 	}
+    ReportStatusToSCMgr(SERVICE_STOPPED, NO_ERROR, 0);
     exit(0);
-
 }
 
 VOID ServiceStop()
@@ -98,6 +99,7 @@ VOID ServiceStop()
 		SetEvent(hServerStopEvent);
 	}
 }
+
 
 int main(int argc, char **argv)
 {
@@ -179,8 +181,7 @@ VOID WINAPI service_ctrl(DWORD dwCtrlCode)
 	switch(dwCtrlCode)
 	{
 	case SERVICE_CONTROL_STOP:
-		//ReportStatusToSCMgr(SERVICE_STOP_PENDING, NO_ERROR, 0);
-		ReportStatusToSCMgr(SERVICE_STOPPED, NO_ERROR, 0);
+		ReportStatusToSCMgr(SERVICE_STOP_PENDING, NO_ERROR, 0);
 		ServiceStop();
 		return;
 
