@@ -112,15 +112,15 @@ int main(int argc, char **argv)
 
 	if((argc > 1) && ((*argv[1] == '-') || (*argv[1] == '/')))
 	{
-		if(strcmp("install", argv[1] + 1) == 0)
+		if(_stricmp("install", argv[1] + 1) == 0)
 		{
 			CmdInstallService();
 		}
-		else if(strcmp("remove", argv[1] + 1) == 0)
+		else if(_stricmp("remove", argv[1] + 1) == 0)
 		{
 			CmdRemoveService();
 		}
-		else if(strcmp("debug", argv[1] + 1) == 0)
+		else if(_stricmp("debug", argv[1] + 1) == 0)
 		{
 			bDebug = TRUE;
 			CmdDebugService(argc, argv);
