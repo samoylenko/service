@@ -72,24 +72,23 @@ VOID ServiceStart(DWORD dwArgc, LPTSTR *lpszArgv)
 	{
 		goto cleanup;
 	}
-
 	while(ssStatus.dwCurrentState == SERVICE_RUNNING)
 	{
-		Sleep(1000);//service loop code here
+	    Sleep(1000);
 	}
 
-cleanup:
+    cleanup:
 
 	if(hServerStopEvent)
 	{
 		CloseHandle(hServerStopEvent);
 	}
-
 	if(hEvents[1])
 	{
 		CloseHandle(hEvents[1]);
 	}
-	exit(0);
+    exit(0);
+
 }
 
 VOID ServiceStop()
@@ -99,7 +98,6 @@ VOID ServiceStop()
 		SetEvent(hServerStopEvent);
 	}
 }
-
 
 int main(int argc, char **argv)
 {
@@ -112,15 +110,15 @@ int main(int argc, char **argv)
 
 	if((argc > 1) && ((*argv[1] == '-') || (*argv[1] == '/')))
 	{
-		if(_stricmp("install", argv[1] + 1) == 0)
+		if(strcmp("install", argv[1] + 1) == 0)
 		{
 			CmdInstallService();
 		}
-		else if(_stricmp("remove", argv[1] + 1) == 0)
+		else if(strcmp("remove", argv[1] + 1) == 0)
 		{
 			CmdRemoveService();
 		}
-		else if(_stricmp("debug", argv[1] + 1) == 0)
+		else if(strcmp("debug", argv[1] + 1) == 0)
 		{
 			bDebug = TRUE;
 			CmdDebugService(argc, argv);
@@ -145,14 +143,13 @@ dispatch:
 	{
 		AddToMessageLog(TEXT("StartServiceCtrlDispatcher failed."));
 	}
-
+    system("pause");
 	return 0;
 }
 
 void WINAPI service_main(DWORD dwArgc, LPTSTR *lpszArgv)
 {
 	sshStatusHandle = RegisterServiceCtrlHandler(TEXT(SZSERVICENAME), service_ctrl);
-
 	if(!sshStatusHandle)
 	{
 		goto cleanup;
@@ -182,7 +179,8 @@ VOID WINAPI service_ctrl(DWORD dwCtrlCode)
 	switch(dwCtrlCode)
 	{
 	case SERVICE_CONTROL_STOP:
-		ReportStatusToSCMgr(SERVICE_STOP_PENDING, NO_ERROR, 0);
+		//ReportStatusToSCMgr(SERVICE_STOP_PENDING, NO_ERROR, 0);
+		ReportStatusToSCMgr(SERVICE_STOPPED, NO_ERROR, 0);
 		ServiceStop();
 		return;
 
